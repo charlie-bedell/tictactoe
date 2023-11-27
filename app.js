@@ -78,21 +78,32 @@ function checkForWinner() {
 }
 
 
-function endGame(winner) {
+function endGame(endGameText) {
   cells = Array.from(document.getElementsByClassName("cell"));
   cells.map((x) => x.disabled = true);
   let turnTracker = document.getElementById("turn-tracker");
-  turnTracker.innerText = `${winner} wins!`;
+  turnTracker.innerText = endGameText;
+}
+
+function isTie() {
+  let cells = cellsToArray();
+  if (!cells.includes("")) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 function updateTurnText(event) {
+  let turnTracker = document.getElementById("turn-tracker");
   if (event.target.textContent == "") {
-    document.getElementById("turn-tracker").textContent = XTURN ? "O's turn" : "X's turn";
+    turnTracker.textContent = XTURN ? "O's turn" : "X's turn";
   }
 }
 
 function handleTurn(event) {
   updateTurnText(event);
+  
   if (XTURN) {
     placeX(event);
     XTURN = !XTURN;
@@ -102,7 +113,9 @@ function handleTurn(event) {
   }
   let winner = checkForWinner();
   if ((winner == "O" ) || (winner == "X")) {
-    endGame(winner);
+    endGame(`${winner} wins!`);
+  } else if (isTie()) {
+    endGame("It's a tie!");
   }
   
 }
@@ -111,5 +124,15 @@ function handleTurn(event) {
 // -------------------- MAIN --------------------
 
 populateBoard();
+
 let cells = Array.from(document.getElementsByClassName("cell"));
 cells.map((x) => x.addEventListener("click", handleTurn));
+
+document.getElementById('restart').addEventListener('click', (e) => {
+  document.getElementById("board").innerHTML = "";
+  XTURN = true;  
+  populateBoard();
+  cells = Array.from(document.getElementsByClassName("cell"));
+  cells.map((x) => x.addEventListener("click", handleTurn));
+  document.getElementById("turn-tracker").textContent = "X's turn";
+});
