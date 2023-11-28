@@ -79,7 +79,7 @@ function checkForWinner() {
 
 
 function endGame(endGameText) {
-  cells = Array.from(document.getElementsByClassName("cell"));
+  let cells = Array.from(document.getElementsByClassName("cell"));
   cells.map((x) => x.disabled = true);
   let turnTracker = document.getElementById("turn-tracker");
   turnTracker.innerText = endGameText;
@@ -104,10 +104,10 @@ function updateTurnText(event) {
 function handleTurn(event) {
   updateTurnText(event);
   
-  if (XTURN) {
+  if ((XTURN) && (event.target.textContent == "")) {
     placeX(event);
     XTURN = !XTURN;
-  } else {
+  } else if (event.target.textContent == "") {
     placeO(event);
     XTURN = !XTURN;
   }
@@ -120,19 +120,21 @@ function handleTurn(event) {
   
 }
 
+function newGame(event) {
+  document.getElementById("board").innerHTML = "";
+  XTURN = true;  
+  populateBoard();
+  let cells = Array.from(document.getElementsByClassName("cell"));
+  cells.map((x) => x.addEventListener("click", handleTurn));
+  document.getElementById("turn-tracker").textContent = "X's turn";
+}
+
 
 // -------------------- MAIN --------------------
 
 populateBoard();
 
-let cells = Array.from(document.getElementsByClassName("cell"));
-cells.map((x) => x.addEventListener("click", handleTurn));
+let board = document.getElementById("board");
+board.addEventListener('click', handleTurn);
 
-document.getElementById('restart').addEventListener('click', (e) => {
-  document.getElementById("board").innerHTML = "";
-  XTURN = true;  
-  populateBoard();
-  cells = Array.from(document.getElementsByClassName("cell"));
-  cells.map((x) => x.addEventListener("click", handleTurn));
-  document.getElementById("turn-tracker").textContent = "X's turn";
-});
+document.getElementById('restart').addEventListener('click', newGame);
